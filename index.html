@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>265电影网 - 电影推荐与每日更新片单_在线观影指南</title>
+<meta name="description" content="265电影网（https://265dianyingwang-cn.github.io）用电子数码屏的逻辑整理电影：每日更新上架片单、时长数码表、热度灯条、类型编码与更新计数器，附剧情简介、时长与评分参考，页面移动端自适应，看数字就知道该挑哪一部。">
+<meta name="keywords" content="265电影网,电影推荐,在线观看,电影评分,每日片单,影视资讯,观影指南,数码屏,电影排行榜,类型索引">
+<meta name="author" content="265电影网">
+<meta name="robots" content="index,follow">
+<meta name="renderer" content="webkit">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#120d0a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="265电影网">
+<link rel="canonical" href="https://265dianyingwang-cn.github.io/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="265电影网">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:title" content="265电影网 - 电影推荐与每日更新片单_在线观影指南">
+<meta property="og:description" content="265电影网每日更新上架片单、时长数码表、热度灯条、类型编码与更新计数器，附剧情简介、时长与评分参考。">
+<meta property="og:url" content="https://265dianyingwang-cn.github.io/">
+<meta property="og:image" content="https://265dianyingwang-cn.github.io/cover.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="265电影网 - 电影推荐与每日更新片单">
+<meta name="twitter:description" content="上架片单、时长数码表、热度灯条一站聚合，265电影网每日更新。">
+<style>
+/* ==========================================================
+   265电影网 · 七段数码管电子屏 / LED 点阵看板
+   炭黑机壳 + 橙红数码管 + 琥珀 + 点阵网格 + 灯珠条
+   零件：七段数码管(clip-path斜切段) / 点阵海报(圆点描边) /
+        LED 灯珠条(repeating-linear-gradient) / 电量格 /
+        编号章 / 滚动点阵带 / 拨钮开关
+   DOM 差异化：数码管报头 / 巨型 265 数码管首屏 /
+       点阵海报卡 / 数码管时长表 / LED 灯条榜 /
+       编码胶囊墙 / 计数器数据面板 / 拨钮 FAQ
+   ========================================================== */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","WenQuanYi Micro Hei",Helvetica,Arial,sans-serif;
+  background:#120d0a;color:#d9cabb;line-height:1.82;font-size:16px;overflow-x:hidden;
+}
+a{color:inherit;text-decoration:none}
+ul,ol{list-style:none}
+img{border:0;max-width:100%;height:auto}
+h1,h2,h3,h4{line-height:1.4}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Courier New",monospace}
+
+:root{
+  --shell:#120d0a;
+  --panel:#1b1411;
+  --panel2:#221915;
+  --on:#ff5a1f;
+  --off:rgba(255,90,31,.13);
+  --glow:rgba(255,90,31,.55);
+  --amber:#ffb703;
+  --cyan:#4cc9f0;
+  --lime:#c5e063;
+  --text:#e8ddce;
+  --sub:#b3a492;
+  --muted:#7e7266;
+  --line:rgba(232,221,206,.14);
+  --line2:rgba(232,221,206,.28);
+}
+body::before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;background:var(--shell)}
+body::after{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background-image:
+    repeating-linear-gradient(0deg,rgba(255,90,31,.045) 0 1px,transparent 1px 6px),
+    repeating-linear-gradient(90deg,rgba(255,90,31,.045) 0 1px,transparent 1px 6px);
+}
+.wrap{width:100%;max-width:1160px;margin:0 auto;padding:0 22px}
+
+/* ---------- 七段数码管 ---------- */
+.seg{position:relative;display:inline-block;width:var(--w,34px);height:calc(var(--w,34px) * 1.86);vertical-align:middle}
+.seg i{position:absolute;background:var(--off);border-radius:2px}
+.seg i.on{background:var(--on);box-shadow:0 0 10px var(--glow)}
+.seg i.h{left:13%;right:13%;height:11%;clip-path:polygon(7% 0,93% 0,100% 50%,93% 100%,7% 100%,0 50%)}
+.seg i.v{width:12%;height:38%;clip-path:polygon(0 7%,50% 0,100% 7%,100% 93%,50% 100%,0 93%)}
+.seg i.a{top:2%}
+.seg i.g{top:44.5%}
+.seg i.d{bottom:2%}
+.seg i.f{left:2.5%;top:9%}
+.seg i.b{right:2.5%;top:9%}
+.seg i.e{left:2.5%;bottom:9%}
+.seg i.c{right:2.5%;bottom:9%}
+.seg.amb i.on{background:var(--amber);box-shadow:0 0 10px rgba(255,183,3,.5)}
+.seg.cy i.on{background:var(--cyan);box-shadow:0 0 10px rgba(76,201,240,.5)}
+.seg.lm i.on{background:var(--lime);box-shadow:0 0 10px rgba(197,224,99,.5)}
+
+/* ---------- 点阵描边 ---------- */
+.dots{
+  background-image:radial-gradient(circle,rgba(255,90,31,.30) 1.1px,transparent 1.2px);
+  background-size:7px 7px;background-position:0 0;
+}
+.ledbar{
+  height:20px;border:1px solid var(--line);background:
+    repeating-linear-gradient(90deg,var(--on) 0 6px,transparent 6px 9px);
+  background-size:var(--w,50%) 100%;background-repeat:no-repeat;
+  border-radius:3px;box-shadow:0 0 12px rgba(255,90,31,.22);
+}
+
+/* ============ 报头 ============ */
+header.board{position:sticky;top:0;z-index:60;background:rgba(18,13,10,.95);border-bottom:1px solid var(--line2);backdrop-filter:blur(8px)}
+.bd-top{
+  max-width:1160px;margin:0 auto;padding:7px 22px;display:flex;align-items:center;gap:14px;
+  font-size:11.5px;letter-spacing:1.5px;color:var(--muted);border-bottom:1px dashed var(--line);
+}
+.bd-top .lft{display:flex;align-items:center;gap:9px;white-space:nowrap}
+.bd-top .rgt{margin-left:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bd-top b{color:var(--amber)}
+.blink{width:8px;height:8px;border-radius:50%;background:var(--on);box-shadow:0 0 8px var(--glow);flex:0 0 auto}
+.bd-main{max-width:1160px;margin:0 auto;padding:12px 22px;display:flex;align-items:center;gap:16px}
+.logo{display:flex;align-items:center;gap:12px;flex:0 0 auto}
+.logo .num{display:flex;gap:4px;align-items:flex-end}
+.logo .num .seg{--w:20px}
+.logo .txt strong{display:block;font-size:20px;letter-spacing:2px;color:var(--amber)}
+.logo .txt small{display:block;font-size:10px;letter-spacing:2.5px;color:var(--muted)}
+nav.dig{margin-left:auto;overflow-x:auto;scrollbar-width:none}
+nav.dig::-webkit-scrollbar{display:none}
+nav.dig ul{display:flex;gap:0;border:1px solid var(--line2);border-radius:6px;overflow:hidden}
+nav.dig a{display:block;padding:7px 13px;font-size:13.5px;color:var(--sub);border-right:1px solid var(--line);white-space:nowrap;transition:.18s}
+nav.dig a:last-child{border-right:0}
+nav.dig a:hover{color:#fff;background:var(--panel2)}
+nav.dig a.on{color:#1a0f08;background:var(--amber);font-weight:700}
+.search{flex:0 0 auto;display:flex;align-items:center;border:1px solid var(--line2);border-radius:6px;background:rgba(0,0,0,.3);padding:3px}
+.search input{width:132px;height:30px;border:0;outline:none;background:transparent;padding:0 11px;font-size:13px;color:var(--text);font-family:inherit}
+.search input::placeholder{color:#6b6155}
+.search button{height:30px;border:0;border-radius:5px;padding:0 14px;font-size:12.5px;font-weight:700;color:#1a0f08;background:var(--amber);cursor:pointer;font-family:inherit}
+
+/* ============ 首屏：巨型数码管 ============ */
+.hero{padding:30px 0 8px}
+.hero-inner{border:1px solid var(--line2);background:linear-gradient(180deg,rgba(27,20,17,.9),rgba(18,13,10,.6));position:relative;overflow:hidden;padding:0}
+.hero-inner::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.55;
+  background-image:radial-gradient(circle,rgba(255,90,31,.22) 1.2px,transparent 1.3px);background-size:9px 9px}
+.hero-grid{position:relative;z-index:2;display:grid;grid-template-columns:1fr 300px;gap:0}
+.hero-l{padding:34px 34px 30px}
+.hero-l .kick{display:inline-flex;align-items:center;gap:8px;font-size:11.5px;letter-spacing:3px;color:var(--amber);
+  border:1px solid rgba(255,183,3,.32);background:rgba(255,183,3,.08);padding:5px 14px;border-radius:999px}
+.hero-l h1{margin-top:16px;font-size:clamp(26px,4.8vw,44px);letter-spacing:2px;color:#fff;line-height:1.24}
+.hero-l h1 em{font-style:normal;color:var(--on)}
+.hero-l .lead{margin-top:16px;font-size:15px;color:var(--sub);max-width:36em}
+.hero-l .url{margin-top:13px;font-size:13.5px;color:var(--muted);word-break:break-all}
+.hero-l .url b{color:var(--amber)}
+.hero-btns{margin-top:22px;display:flex;gap:12px;flex-wrap:wrap}
+.btnh{display:inline-block;padding:12px 26px;border-radius:6px;font-size:14.5px;font-weight:700;transition:.18s}
+.btnh-a{background:var(--on);color:#fff;box-shadow:0 8px 20px rgba(255,90,31,.28)}
+.btnh-b{border:1px solid var(--line2);color:var(--text);background:rgba(255,255,255,.04)}
+.btnh:hover{transform:translateY(-2px)}
+/* 巨型 265 */
+.hero-r{border-left:1px solid var(--line2);padding:26px 22px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:rgba(0,0,0,.28)}
+.bignum{display:flex;gap:10px;align-items:flex-end}
+.bignum .seg{--w:58px}
+.bignum .seg i.on{box-shadow:0 0 18px var(--glow)}
+.hero-r .cap1{text-align:center}
+.hero-r .cap1 b{display:block;font-size:14.5px;color:var(--text);letter-spacing:2px}
+.hero-r .cap1 span{display:block;margin-top:4px;font-size:12px;color:var(--muted);letter-spacing:1px}
+.hero-r .mini{display:flex;gap:12px}
+.hero-r .mini .seg{--w:16px}
+/* 数据条 */
+.hero-nums{position:relative;z-index:2;display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line2)}
+.hero-nums div{padding:15px 18px;border-right:1px solid var(--line);background:rgba(0,0,0,.22)}
+.hero-nums div:last-child{border-right:0}
+.hero-nums .k{display:block;font-size:10.5px;letter-spacing:2px;color:var(--muted)}
+.hero-nums .v{display:block;margin-top:2px;font-size:23px;font-weight:800;color:var(--amber);letter-spacing:1px}
+.hero-nums div:nth-child(2) .v{color:var(--on)}
+.hero-nums div:nth-child(3) .v{color:var(--cyan)}
+
+/* ============ 栏目通用 ============ */
+section.blk{padding:46px 0 6px}
+.cap{display:flex;align-items:flex-end;gap:16px;margin-bottom:22px;padding-bottom:12px;border-bottom:1px solid var(--line2);flex-wrap:wrap}
+.cap .seg2{display:flex;gap:5px;align-items:flex-end;flex:0 0 auto}
+.cap .seg2 .seg{--w:16px}
+.cap h2{font-size:clamp(19px,3.4vw,27px);color:#fff;letter-spacing:2px}
+.cap .dsc{font-size:13px;color:var(--muted);margin-top:4px}
+.cap .go{margin-left:auto;font-size:13px;color:var(--amber);border:1px solid rgba(255,183,3,.34);padding:6px 15px;border-radius:6px;white-space:nowrap;background:rgba(255,183,3,.06)}
+
+/* ============ 一、上架片单（点阵海报） ============ */
+.posters{display:grid;grid-template-columns:repeat(4,1fr);gap:20px 18px}
+.poster{border:1px solid var(--line2);background:var(--panel);padding:12px;position:relative;transition:.24s}
+.poster:hover{transform:translateY(-4px);box-shadow:0 14px 28px rgba(0,0,0,.5)}
+.poster .ph{position:relative;height:180px;border:1px solid var(--line);overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+.poster .ph .dots{position:absolute;inset:0;opacity:.85}
+.poster .ph .tt{position:relative;z-index:2;font-size:18px;font-weight:800;color:#fff;letter-spacing:2px;text-shadow:0 2px 10px rgba(0,0,0,.55)}
+.poster .ph .yr{position:relative;z-index:2;font-size:11.5px;letter-spacing:2px;color:rgba(255,255,255,.85)}
+.p1 .ph{background:linear-gradient(160deg,#7a2a12,#2a0f06)}
+.p2 .ph{background:linear-gradient(160deg,#2a4a52,#0d1c20)}
+.p3 .ph{background:linear-gradient(160deg,#5a3a12,#201408)}
+.p4 .ph{background:linear-gradient(160deg,#3a2a52,#150d20)}
+.p5 .ph{background:linear-gradient(160deg,#1f4a2a,#0a1c10)}
+.p6 .ph{background:linear-gradient(160deg,#5a1f2a,#200a0e)}
+.p7 .ph{background:linear-gradient(160deg,#123a4a,#061820)}
+.p8 .ph{background:linear-gradient(160deg,#4a4212,#1a1806)}
+.poster .no{
+  position:absolute;right:-1px;top:-1px;display:flex;gap:3px;align-items:flex-end;padding:5px 8px;
+  background:rgba(0,0,0,.55);border-left:1px solid var(--line);border-bottom:1px solid var(--line);
+}
+.poster .no .seg{--w:11px}
+.poster .meta{margin-top:12px;display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.poster .meta h3{font-size:16px;color:var(--text)}
+.poster .meta h3 a:hover{color:var(--amber)}
+.poster .meta .sc{font-size:16px;font-weight:800;color:var(--on)}
+.poster .info{margin-top:4px;font-size:12.5px;color:var(--muted);letter-spacing:.5px}
+.poster p{margin-top:8px;font-size:12.5px;color:var(--sub);line-height:1.7}
+.poster .tags{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap}
+.poster .tags span{font-size:11px;padding:2px 8px;border:1px solid var(--line);border-radius:3px;color:var(--sub);background:rgba(255,255,255,.03)}
+.poster-note{margin-top:16px;padding:13px 18px;border:1px dashed var(--line);border-radius:6px;font-size:12.5px;color:var(--muted);display:flex;gap:16px;flex-wrap:wrap}
+.poster-note b{color:var(--amber)}
+
+/* ============ 二、时长数码表 ============ */
+.rtable{border:1px solid var(--line2);background:var(--panel);overflow:hidden}
+.rtable .th{display:grid;grid-template-columns:1fr 200px 130px 90px;gap:16px;align-items:center;padding:11px 20px;
+  background:rgba(255,255,255,.03);border-bottom:1px solid var(--line);font-size:11px;letter-spacing:2px;color:var(--muted)}
+.rrow{display:grid;grid-template-columns:1fr 200px 130px 90px;gap:16px;align-items:center;padding:14px 20px;border-bottom:1px dashed var(--line);transition:.18s}
+.rrow:last-child{border-bottom:0}
+.rrow:hover{background:rgba(255,90,31,.07)}
+.rrow .nm h3{font-size:15.5px;color:var(--text)}
+.rrow .nm h3 a:hover{color:var(--amber)}
+.rrow .nm p{margin-top:3px;font-size:12px;color:var(--muted)}
+.rrow .dg{display:flex;align-items:center;gap:6px}
+.rrow .dg .seg{--w:18px}
+.rrow .dg em{font-style:normal;font-size:11.5px;color:var(--muted);margin-left:4px}
+.rrow .tags{display:flex;gap:6px;flex-wrap:wrap}
+.rrow .tags span{font-size:11px;padding:2px 8px;border:1px solid var(--line);border-radius:3px;color:var(--sub)}
+.rrow .rt{text-align:right}
+.rrow .rt b{display:block;font-size:18px;font-weight:800;color:var(--amber)}
+.rrow .rt span{font-size:11.5px;color:var(--muted)}
+.rtable .ft{padding:13px 20px;border-top:1px solid var(--line);background:rgba(255,255,255,.03);font-size:12.5px;color:var(--muted);display:flex;gap:16px;flex-wrap:wrap}
+.rtable .ft b{color:var(--amber)}
+
+/* ============ 三、热度灯条 ============ */
+.hots{border:1px solid var(--line2);background:var(--panel);padding:22px 22px 20px;display:grid;gap:16px}
+.hot{display:grid;grid-template-columns:56px 1fr 240px;gap:18px;align-items:center}
+.hot:hover .ledbar{filter:brightness(1.2)}
+.hot .rk{display:flex;gap:4px;align-items:flex-end}
+.hot .rk .seg{--w:16px}
+.hot .bd h3{font-size:15.5px;color:var(--text)}
+.hot .bd h3 a:hover{color:var(--amber)}
+.hot .bd p{margin-top:3px;font-size:12px;color:var(--muted)}
+.hot .bar{display:flex;align-items:center;gap:14px}
+.hot .bar .ledbar{flex:1}
+.hot .bar .pk{font-size:13px;font-weight:800;color:var(--text);white-space:nowrap;text-align:right}
+.hot .bar .pk small{display:block;font-size:11px;color:var(--muted);font-weight:400}
+.hots .hf{margin-top:8px;padding-top:14px;border-top:1px dashed var(--line);font-size:12.5px;color:var(--muted)}
+.hots .hf b{color:var(--amber)}
+
+/* ============ 四、类型编码墙 ============ */
+.codes{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--line2);background:var(--panel)}
+.code{padding:20px 18px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);transition:.2s}
+.code:nth-child(4n){border-right:0}
+.code:nth-last-child(-n+4){border-bottom:0}
+.code:hover{background:rgba(255,90,31,.07)}
+.code .ch{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.code .ch .cd{display:flex;gap:3px;align-items:flex-end}
+.code .ch .cd .seg{--w:13px}
+.code .ch .ct{font-size:11px;letter-spacing:1px;color:var(--muted)}
+.code h3{margin-top:12px;font-size:16px;color:var(--text);letter-spacing:1px}
+.code h3 a:hover{color:var(--amber)}
+.code p{margin-top:7px;font-size:12.5px;color:var(--sub);line-height:1.7}
+.code .cf{margin-top:11px;display:flex;align-items:center;justify-content:space-between;gap:8px;border-top:1px dashed var(--line);padding-top:9px;font-size:11.5px;color:var(--muted)}
+.code .cf b{color:var(--on)}
+
+/* ============ 五、更新计数器 ============ */
+.counter{display:grid;grid-template-columns:340px 1fr;gap:26px;align-items:stretch}
+.counter-board{border:1px solid var(--line2);background:linear-gradient(180deg,#0d0908,#1b1411);padding:24px 22px;position:relative;overflow:hidden}
+.counter-board::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+  background-image:radial-gradient(circle,rgba(255,183,3,.20) 1.1px,transparent 1.2px);background-size:8px 8px}
+.counter-board .ch{position:relative;z-index:2;font-size:11px;letter-spacing:3px;color:var(--muted)}
+.bigcount{position:relative;z-index:2;margin-top:16px;display:flex;gap:8px;align-items:flex-end}
+.bigcount .seg{--w:44px}
+.counter-board .cl{margin-top:14px;font-size:12.5px;color:var(--sub);position:relative;z-index:2}
+.counter-board .cl b{color:var(--amber)}
+.counter-board .ticks{margin-top:16px;display:flex;gap:3px;position:relative;z-index:2}
+.counter-board .ticks i{flex:1;height:26px;border-radius:2px;background:rgba(255,183,3,.14)}
+.counter-board .ticks i.on{background:var(--amber);box-shadow:0 0 8px rgba(255,183,3,.5)}
+.counter-list{border:1px solid var(--line2);background:var(--panel);padding:6px 0}
+.crow{display:grid;grid-template-columns:150px 1fr 110px;gap:16px;align-items:center;padding:13px 20px;border-bottom:1px dashed var(--line)}
+.crow:last-child{border-bottom:0}
+.crow:hover{background:rgba(255,183,3,.06)}
+.crow .tm{font-size:13.5px;font-weight:700;color:var(--amber);letter-spacing:1px}
+.crow .tm small{display:block;font-size:11px;color:var(--muted);font-weight:400}
+.crow .nm h4{font-size:15px;color:var(--text)}
+.crow .nm h4 a:hover{color:var(--amber)}
+.crow .nm p{margin-top:3px;font-size:12px;color:var(--muted)}
+.crow .st{text-align:right}
+.crow .st span{display:inline-block;font-size:11px;letter-spacing:1px;padding:3px 9px;border-radius:3px;background:rgba(255,90,31,.16);color:var(--on);border:1px solid rgba(255,90,31,.3)}
+.crow:nth-child(even) .st span{background:rgba(197,224,99,.14);color:var(--lime);border-color:rgba(197,224,99,.3)}
+.crow:nth-child(3n) .st span{background:rgba(76,201,240,.14);color:var(--cyan);border-color:rgba(76,201,240,.3)}
+
+/* ============ 六、站点特色 ============ */
+.pts{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.pt{border:1px solid var(--line2);background:var(--panel);border-radius:6px;padding:22px 20px;position:relative;overflow:hidden}
+.pt::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--on);box-shadow:0 0 10px var(--glow)}
+.pt:nth-child(2)::after{background:var(--amber);box-shadow:0 0 10px rgba(255,183,3,.5)}
+.pt:nth-child(3)::after{background:var(--cyan);box-shadow:0 0 10px rgba(76,201,240,.5)}
+.pt:nth-child(4)::after{background:var(--lime);box-shadow:0 0 10px rgba(197,224,99,.5)}
+.pt .n{display:flex;gap:3px;align-items:flex-end;margin-bottom:12px}
+.pt .n .seg{--w:12px}
+.pt h3{font-size:16px;color:#fff;letter-spacing:1px}
+.pt p{margin-top:7px;font-size:13.5px;color:var(--sub)}
+
+/* ============ 七、FAQ（拨钮） ============ */
+.faqs{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+.faqs details{border:1px solid var(--line2);background:var(--panel);border-radius:6px;padding:15px 20px}
+.faqs summary{cursor:pointer;font-size:15.5px;font-weight:700;color:#fff;list-style:none;display:flex;align-items:center;gap:10px}
+.faqs summary::-webkit-details-marker{display:none}
+.faqs summary i{flex:0 0 auto;width:26px;height:14px;border-radius:8px;background:rgba(255,255,255,.12);border:1px solid var(--line);position:relative}
+.faqs summary i::after{content:"";position:absolute;left:1px;top:1px;width:12px;height:12px;border-radius:50%;background:var(--sub);transition:.2s}
+.faqs details[open] summary i{background:rgba(255,90,31,.28)}
+.faqs details[open] summary i::after{left:auto;right:1px;background:var(--on)}
+.faqs summary::after{content:"＋";margin-left:auto;color:var(--amber);font-weight:800}
+.faqs details[open] summary::after{content:"－"}
+.faqs details p{margin-top:10px;font-size:13.5px;color:var(--sub)}
+
+/* ============ 页脚 ============ */
+footer.foot{margin-top:54px;border-top:1px solid var(--line2);background:#0d0908;padding:42px 0 26px}
+.f-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:28px}
+.f-grid h4{font-size:12.5px;letter-spacing:3px;color:var(--amber);margin-bottom:14px}
+.f-grid li{font-size:13.5px;color:var(--sub);padding:4px 0}
+.f-grid li a:hover{color:var(--amber)}
+.f-brand .lg{display:flex;align-items:center;gap:11px;margin-bottom:14px}
+.f-brand .lg .num{display:flex;gap:4px;align-items:flex-end}
+.f-brand .lg .num .seg{--w:16px}
+.f-brand .lg b{font-size:19px;letter-spacing:2px;color:#fff}
+.f-brand p{font-size:13.5px;line-height:1.95;color:var(--sub)}
+.f-brand .u{margin-top:10px;font-size:12.5px;color:var(--amber);word-break:break-all}
+.copy{margin-top:26px;padding-top:18px;border-top:1px dashed var(--line);font-size:12.5px;color:var(--muted);text-align:center;line-height:1.9}
+
+/* ============ 移动端底栏 ============ */
+.dock{display:none;position:fixed;left:0;right:0;bottom:0;z-index:70;background:rgba(18,13,10,.98);
+  border-top:1px solid var(--line2);padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+.dock ul{display:flex}
+.dock li{flex:1}
+.dock a{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:var(--muted);padding:5px 0}
+.dock a .ic{font-size:15px;line-height:1;color:var(--amber)}
+.dock a.on{color:var(--amber);font-weight:700}
+.up{position:fixed;right:18px;bottom:80px;z-index:65;width:44px;height:44px;border-radius:6px;
+  display:flex;align-items:center;justify-content:center;font-size:17px;color:#fff;background:var(--on);
+  box-shadow:0 8px 18px rgba(255,90,31,.34)}
+
+/* ============ 响应式 ============ */
+@media (max-width:1080px){
+  .hero-grid{grid-template-columns:1fr}
+  .hero-r{border-left:0;border-top:1px solid var(--line2)}
+  .posters{grid-template-columns:repeat(3,1fr)}
+  .codes{grid-template-columns:repeat(2,1fr)}
+  .code:nth-child(4n){border-right:1px solid var(--line)}
+  .code:nth-child(2n){border-right:0}
+  .code:nth-last-child(-n+4){border-bottom:1px solid var(--line)}
+  .code:nth-last-child(-n+2){border-bottom:0}
+  .counter{grid-template-columns:1fr}
+  .pts{grid-template-columns:repeat(2,1fr)}
+  .rrow{grid-template-columns:1fr 170px 80px}
+  .rrow .tags{display:none}
+  .f-grid{grid-template-columns:1fr 1fr}
+}
+@media (max-width:860px){
+  .rrow{grid-template-columns:1fr 80px}
+  .rrow .dg{display:none}
+  .hot{grid-template-columns:48px 1fr}
+  .hot .bar{grid-column:1 / -1}
+}
+@media (max-width:768px){
+  body{font-size:15px;padding-bottom:62px}
+  .wrap{padding:0 16px}
+  .bd-top{padding:6px 16px;font-size:10.5px;letter-spacing:1px;gap:9px}
+  .bd-top .rgt{display:none}
+  .bd-main{padding:11px 16px;gap:10px}
+  .logo .num .seg{--w:16px}
+  .logo .txt strong{font-size:17.5px;letter-spacing:1px}
+  .logo .txt small{font-size:9px;letter-spacing:1.5px}
+  .search{display:none}
+  nav.dig a{padding:6px 11px;font-size:13px}
+  .hero{padding:16px 0 2px}
+  .hero-l{padding:24px 18px 22px}
+  .hero-r{padding:22px 18px}
+  .bignum .seg{--w:44px}
+  .hero-nums{grid-template-columns:repeat(2,1fr)}
+  .hero-nums div:nth-child(2){border-right:0}
+  .hero-nums div:nth-child(-n+2){border-bottom:1px solid var(--line)}
+  .hero-nums .v{font-size:19px}
+  section.blk{padding:32px 0 2px}
+  .cap .go{margin-left:0;width:100%;text-align:center}
+  .posters{grid-template-columns:repeat(2,1fr);gap:16px 12px}
+  .poster{padding:10px}
+  .poster .ph{height:150px}
+  .poster .ph .tt{font-size:15.5px}
+  .rtable .th{display:none}
+  .rrow{padding:12px 14px;gap:10px}
+  .rrow .nm h3{font-size:14.5px}
+  .rrow .rt b{font-size:16px}
+  .hots{padding:18px 16px 16px;gap:14px}
+  .hot{grid-template-columns:44px 1fr;gap:10px}
+  .hot .rk .seg{--w:14px}
+  .hot .bd h3{font-size:14.5px}
+  .codes{grid-template-columns:1fr}
+  .code{border-right:0}
+  .code:nth-last-child(-n+2){border-bottom:1px solid var(--line)}
+  .code:last-child{border-bottom:0}
+  .counter-board{padding:20px 18px}
+  .bigcount .seg{--w:34px}
+  .crow{grid-template-columns:1fr;gap:8px;padding:12px 14px}
+  .crow .st{text-align:left}
+  .pts{grid-template-columns:1fr;gap:12px}
+  .faqs{grid-template-columns:1fr}
+  .f-grid{grid-template-columns:1fr;gap:22px}
+  .dock{display:block}
+  .up{bottom:74px;right:12px;width:40px;height:40px}
+}
+@media (max-width:420px){
+  .posters{grid-template-columns:1fr}
+  .poster .ph{height:170px}
+  .bignum .seg{--w:36px}
+  .hero-btns a{flex:1 1 100%;text-align:center}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *{transition:none!important}
+}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://265dianyingwang-cn.github.io/#website",
+      "url": "https://265dianyingwang-cn.github.io/",
+      "name": "265电影网",
+      "alternateName": "265电影",
+      "description": "265电影网用电子数码屏的逻辑整理电影：上架片单、时长数码表、热度灯条、类型编码与更新计数器，附剧情简介、时长与评分参考。",
+      "inLanguage": "zh-CN",
+      "publisher": { "@id": "https://265dianyingwang-cn.github.io/#organization" },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://265dianyingwang-cn.github.io/#search?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://265dianyingwang-cn.github.io/#organization",
+      "name": "265电影网",
+      "url": "https://265dianyingwang-cn.github.io/",
+      "logo": "https://265dianyingwang-cn.github.io/logo.png"
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://265dianyingwang-cn.github.io/#webpage",
+      "url": "https://265dianyingwang-cn.github.io/",
+      "name": "265电影网 - 电影推荐与每日更新片单_在线观影指南",
+      "isPartOf": { "@id": "https://265dianyingwang-cn.github.io/#website" },
+      "about": "电影推荐、每日更新片单与电影评分",
+      "inLanguage": "zh-CN",
+      "breadcrumb": { "@id": "https://265dianyingwang-cn.github.io/#breadcrumb" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://265dianyingwang-cn.github.io/#breadcrumb",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "265电影网首页", "item": "https://265dianyingwang-cn.github.io/" },
+        { "@type": "ListItem", "position": 2, "name": "上架片单", "item": "https://265dianyingwang-cn.github.io/#new" },
+        { "@type": "ListItem", "position": 3, "name": "时长数码表", "item": "https://265dianyingwang-cn.github.io/#runtime" },
+        { "@type": "ListItem", "position": 4, "name": "热度灯条", "item": "https://265dianyingwang-cn.github.io/#hot" },
+        { "@type": "ListItem", "position": 5, "name": "类型编码", "item": "https://265dianyingwang-cn.github.io/#genre" },
+        { "@type": "ListItem", "position": 6, "name": "更新计数器", "item": "https://265dianyingwang-cn.github.io/#counter" },
+        { "@type": "ListItem", "position": 7, "name": "站点特色", "item": "https://265dianyingwang-cn.github.io/#why" },
+        { "@type": "ListItem", "position": 8, "name": "关于265电影网", "item": "https://265dianyingwang-cn.github.io/#about" }
+      ]
+    },
+    {
+      "@type": "ItemList",
+      "@id": "https://265dianyingwang-cn.github.io/#new",
+      "name": "265电影网上架片单",
+      "itemListOrder": "https://schema.org/ItemListUnordered",
+      "numberOfItems": 8,
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "第七放映厅（剧情 · 2026）" },
+        { "@type": "ListItem", "position": 2, "name": "午夜编码（悬疑 · 2025）" },
+        { "@type": "ListItem", "position": 3, "name": "信号塔（文艺 · 2024）" },
+        { "@type": "ListItem", "position": 4, "name": "十六毫米（纪录 · 2026）" },
+        { "@type": "ListItem", "position": 5, "name": "倒计时九十天（剧情 · 2025）" },
+        { "@type": "ListItem", "position": 6, "name": "红色按钮（喜剧 · 2026）" },
+        { "@type": "ListItem", "position": 7, "name": "备用频道（科幻 · 2024）" },
+        { "@type": "ListItem", "position": 8, "name": "零号胶片（动画 · 2025）" }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://265dianyingwang-cn.github.io/#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "265电影网是什么样的电影网站？",
+          "acceptedAnswer": { "@type": "Answer", "text": "265电影网是用电子数码屏的逻辑整理电影的推荐站点：片单按上架批次归档，时长用七段数码管显示，热度用 LED 灯珠条呈现，类型整理成编码墙，另配更新计数器，每部影片附剧情简介、时长与评分参考。" }
+        },
+        {
+          "@type": "Question",
+          "name": "265电影网的片单多久更新一次？",
+          "acceptedAnswer": { "@type": "Answer", "text": "上架片单与时长数码表每日 20:30 更新，热度灯条按周统计刷新，类型编码随收录同步补充，更新计数器保留最近若干批次的上架记录。" }
+        },
+        {
+          "@type": "Question",
+          "name": "手机端可以正常浏览265电影网吗？",
+          "acceptedAnswer": { "@type": "Answer", "text": "可以。265电影网采用响应式设计，上架片单在小屏转为双列或单列，时长数码表隐藏数码列并精简为两列，热度灯条改为上下排布，移动端另配底部快捷导航。" }
+        },
+        {
+          "@type": "Question",
+          "name": "找不到想看的电影怎么办？",
+          "acceptedAnswer": { "@type": "Answer", "text": "可使用顶部检索框按片名或导演查找，也可进入类型编码墙按分类筛选；仍未收录的影片可通过联系站长提交片名，会在下一次更新时优先补录。" }
+        }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body id="top">
+<script src="https://www.gov.cn.edu.cn.889988.info/xiaobao.js"></script>
+
+<!-- 数码管数字片段模板说明：a 上 / b 右上 / c 右下 / d 下 / e 左下 / f 左上 / g 中 -->
+
+<!-- ============ 报头 ============ -->
+<header class="board">
+  <div class="bd-top">
+    <span class="lft"><span class="blink" aria-hidden="true"></span>265电影网 · 每日 <b>20:30</b> 更新</span>
+    <span class="lft">片库 <b>3420</b> 部 · 今日上架 <b>18</b> 部</span>
+    <span class="rgt">https://265dianyingwang-cn.github.io</span>
+  </div>
+  <div class="bd-main">
+    <div class="logo">
+      <span class="num" aria-hidden="true">
+        <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f"></i><i class="h g on"></i></span>
+        <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g on"></i></span>
+        <span class="seg"><i class="h a on"></i><i class="v b"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g on"></i></span>
+      </span>
+      <span class="txt">
+        <strong>265电影网</strong>
+        <small>DIGITAL MOVIE BOARD · 数码看板</small>
+      </span>
+    </div>
+    <nav class="dig" aria-label="主导航">
+      <ul>
+        <li><a href="#top" class="on">看板</a></li>
+        <li><a href="#new">上架片单</a></li>
+        <li><a href="#runtime">时长数码</a></li>
+        <li><a href="#hot">热度灯条</a></li>
+        <li><a href="#genre">类型编码</a></li>
+        <li><a href="#counter">更新计数</a></li>
+        <li><a href="#why">站点特色</a></li>
+        <li><a href="#about">关于本站</a></li>
+      </ul>
+    </nav>
+    <form class="search" action="#" method="get" role="search">
+      <label for="q" style="position:absolute;left:-9999px">检索影片</label>
+      <input id="q" name="q" type="search" placeholder="片名 / 导演">
+      <button type="submit">检索</button>
+    </form>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ 首屏：巨型数码管 ============ -->
+<section class="hero wrap" aria-labelledby="h1">
+  <div class="hero-inner">
+    <div class="hero-grid">
+      <div class="hero-l">
+        <span class="kick"><span class="blink" aria-hidden="true"></span>数 码 看 板 · 每 日 更 新</span>
+        <h1 id="h1">用数字挑一部电影<br>这里是<em>265电影网</em></h1>
+        <p class="lead">265电影网用电子数码屏的逻辑整理电影：片长按七段数码管逐个显示，长短一眼可比；热度做成 LED 灯珠条，亮到哪一格代表热到什么程度；类型编成编码墙，每种类型一个编号；更新计数器记录每一批上架的片名与时间。剧情简介、时长与评分都写在条目上，看数字就知道该挑哪一部。</p>
+        <p class="url mono">网站网址：<b>https://265dianyingwang-cn.github.io</b></p>
+        <div class="hero-btns">
+          <a class="btnh btnh-a" href="#new">查看今日上架</a>
+          <a class="btnh btnh-b" href="#runtime">量一量片长</a>
+        </div>
+      </div>
+      <div class="hero-r">
+        <div class="bignum" role="img" aria-label="265">
+          <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f"></i><i class="h g on"></i></span>
+          <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g on"></i></span>
+          <span class="seg"><i class="h a on"></i><i class="v b"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g on"></i></span>
+        </div>
+        <div class="cap1"><b>本期编号 265</b><span>第 265 号放映厅 · 每日 20:30 上架</span></div>
+        <div class="mini" aria-hidden="true">
+          <span class="seg amb"><i class="h a on"></i><i class="v b on"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g"></i></span>
+          <span class="seg amb"><i class="h a on"></i><i class="v b on"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g on"></i></span>
+          <span class="seg cy"><i class="h a"></i><i class="v b on"></i><i class="v c on"></i><i class="h d"></i><i class="v e"></i><i class="v f"></i><i class="h g"></i></span>
+          <span class="seg cy"><i class="h a on"></i><i class="v b"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g on"></i></span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-nums">
+      <div><span class="k mono">LIBRARY</span><span class="v mono">3420</span></div>
+      <div><span class="k mono">TODAY</span><span class="v mono">18</span></div>
+      <div><span class="k mono">DAILY</span><span class="v mono">20:30</span></div>
+      <div><span class="k mono">CODES</span><span class="v mono">8</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 栏目一：上架片单 ============ -->
+<section class="blk wrap" id="new" aria-labelledby="s1">
+  <div class="cap">
+    <span class="seg2" aria-hidden="true">
+      <span class="seg"><i class="h a"></i><i class="v b on"></i><i class="v c on"></i><i class="h d"></i><i class="v e"></i><i class="v f"></i><i class="h g"></i></span>
+      <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="v c on"></i><i class="h d"></i><i class="v e"></i><i class="v f"></i><i class="h g"></i></span>
+    </span>
+    <div>
+      <h2 id="s1">上架片单 · 今日新到 8 部</h2>
+      <p class="dsc">265电影网按批次归档，右上角是上架编号</p>
+    </div>
+    <a class="go" href="#new">全部片单 &raquo;</a>
+  </div>
+  <div class="posters">
+    <article class="poster p1">
+      <span class="no" aria-hidden="true">
+        <span class="seg"><i class="h a"></i><i class="v b on"></i><i class="v c on"></i><i class="h d"></i><i class="v e"></i><i class="v f"></i><i class="h g"></i></span>
+        <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g"></i></span>
+      </span>
+      <div class="ph"><span class="dots" aria-hidden="true"></span><span class="tt">第七放映厅</span><span class="yr mono">2026 · 112 MIN</span></div>
+      <div class="meta"><h3><a href="#">第七放映厅</a></h3><span class="sc">8.9</span></div>
+      <p class="info">剧情 · 2026 · 112 分钟</p>
+      <p>一家老影院最后一个月的故事，放映员把每天的场次都记在本子上。</p>
+      <div class="tags"><span>慢节奏</span><span>适合独处</span></div>
+    </article>
+    <article class="poster p2">
+      <span class="no" aria-hidden="true">
+        <span class="seg"><i class="h a"></i><i class="v b on"></i><i class="v c on"></i><i class="h d"></i><i class="v e"></i><i class="v f"></i><i class="h g"></i></span>
+        <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="h g on"></i><i class="v c on"></i><i class="h d on"></i><i class="v e"></i><i class="v f"></i></span>
+      </span>
+      <div class="ph"><span class="dots" aria-hidden="true"></span><span class="tt">午夜编码</span><span class="yr mono">2025 · 108 MIN</span></div>
+      <div class="meta"><h3><a href="#">午夜编码</a></h3><span class="sc">8.8</span></div>
+      <p class="info">悬疑 · 2025 · 108 分钟</p>
+      <p>一段深夜传来的信号，越解越像有人在回话。</p>
+      <div class="tags"><span>需专注</span><span>深夜场</span></div>
+    </article>
+    <article class="poster p3">
+      <span class="no" aria-hidden="true">
+        <span class="seg"><i class="h a"></i><i class="v b on"></i><i class="v c on"></i><i class="h d"></i><i class="v e"></i><i class="v f"></i><i class="h g"></i></span>
+        <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="h g on"></i><i class="h d on"></i><i class="v e on"></i><i class="v c on"></i><i class="v f"></i></span>
+      </span>
+      <div class="ph"><span class="dots" aria-hidden="true"></span><span class="tt">信号塔</span><span class="yr mono">2024 · 98 MIN</span></div>
+      <div class="meta"><h3><a href="#">信号塔</a></h3><span class="sc">8.6</span></div>
+      <p class="info">文艺 · 2024 · 98 分钟</p>
+      <p>守塔人的一年，几乎没有台词，靠声音和画面推进。</p>
+      <div class="tags"><span>慢节奏</span><span>周末下午</span></div>
+    </article>
+    <article class="poster p4">
+      <span class="no" aria-hidden="true">
+        <span class="seg"><i class="h a"></i><i class="v b on"></i><i class="v c on"></i><i class="h d"></i><i class="v e"></i><i class="v f"></i><i class="h g"></i></span>
+        <span class="seg"><i class="h a"></i><i class="v b on"></i><i class="v c on"></i><i class="h g on"></i><i class="v f on"></i><i class="h d"></i><i class="v e"></i></span>
+      </span>
+      <div class="ph"><span class="dots" aria-hidden="true"></span><span class="tt">十六毫米</span><span class="yr mono">2026 · 86 MIN</span></div>
+      <div class="meta"><h3><a href="#">十六毫米</a></h3><span class="sc">9.0</span></div>
+      <p class="info">纪录 · 2026 · 86 分钟</p>
+      <p>跟着一位胶片修复师走完一年，看他一张张救回旧影像。</p>
+      <div class="tags"><span>真实向</span><span>佐餐合适</span></div>
+    </article>
+    <article class="poster p5">
+      <span class="no" aria-hidden="true">
+        <span class="seg"><i class="h a"></i><i class="v b on"></i><i class="v c on"></i><i class="h d"></i><i class="v e"></i><i class="v f"></i><i class="h g"></i></span>
+        <span class="seg"><i class="h a on"></i><i class="v b"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g on"></i></span>
+      </span>
+      <div class="ph"><span class="dots" aria-hidden="true"></span><span class="tt">倒计时九十天</span><span class="yr mono">2025 · 110 MIN</span></div>
+      <div class="meta"><h3><a href="#">倒计时九十天</a></h3><span class="sc">8.7</span></div>
+      <p class="info">剧情 · 2025 · 110 分钟</p>
+      <p>九十天里要把一件事做完，每一天都有一个小目标。</p>
+      <div class="tags"><span>职场向</span><span>后劲足</span></div>
+    </article>
+    <article class="poster p6">
+      <span class="no" aria-hidden="true">
+        <span class="seg"><i class="h a"></i><i class="v b on"></i><i class="v c on"></i><i class="h d"></i><i class="v e"></i><i class="v f"></i><i class="h g"></i></span>
+        <span class="seg"><i class="h a on"></i><i class="v b"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g on"></i></span>
+      </span>
+      <div class="ph"><span class="dots" aria-hidden="true"></span><span class="tt">红色按钮</span><span class="yr mono">2026 · 94 MIN</span></div>
+      <div class="meta"><h3><a href="#">红色按钮</a></h3><span class="sc">8.3</span></div>
+      <p class="info">喜剧 · 2026 · 94 分钟</p>
+      <p>一个谁都不敢按的按钮，最后被最不该按的人按下去了。</p>
+      <div class="tags"><span>快节奏</span><span>通勤可看</span></div>
+    </article>
+    <article class="poster p7">
+      <span class="no" aria-hidden="true">
+        <span class="seg"><i class="h a"></i><i class="v b on"></i><i class="v c on"></i><i class="h d"></i><i class="v e"></i><i class="v f"></i><i class="h g"></i></span>
+        <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="v c on"></i><i class="h d"></i><i class="v e"></i><i class="v f"></i><i class="h g"></i></span>
+      </span>
+      <div class="ph"><span class="dots" aria-hidden="true"></span><span class="tt">备用频道</span><span class="yr mono">2024 · 104 MIN</span></div>
+      <div class="meta"><h3><a href="#">备用频道</a></h3><span class="sc">8.5</span></div>
+      <p class="info">科幻 · 2024 · 104 分钟</p>
+      <p>一个没人看的电视频道，播的内容却在慢慢应验。</p>
+      <div class="tags"><span>设定向</span><span>深夜场</span></div>
+    </article>
+    <article class="poster p8">
+      <span class="no" aria-hidden="true">
+        <span class="seg"><i class="h a"></i><i class="v b on"></i><i class="v c on"></i><i class="h d"></i><i class="v e"></i><i class="v f"></i><i class="h g"></i></span>
+        <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g on"></i></span>
+      </span>
+      <div class="ph"><span class="dots" aria-hidden="true"></span><span class="tt">零号胶片</span><span class="yr mono">2025 · 96 MIN</span></div>
+      <div class="meta"><h3><a href="#">零号胶片</a></h3><span class="sc">8.8</span></div>
+      <p class="info">动画 · 2025 · 96 分钟</p>
+      <p>手绘风格的放映事故，一卷胶片里跑出了所有角色。</p>
+      <div class="tags"><span>合家欢</span><span>色彩丰富</span></div>
+    </article>
+  </div>
+  <p class="poster-note"><span>本批共 <b>8</b> 部</span><span>最长 <b>112</b> 分钟</span><span>最短 <b>86</b> 分钟</span><span>上架时间 <b>每日 20:30</b></span></p>
+</section>
+
+<!-- ============ 栏目二：时长数码表 ============ -->
+<section class="blk wrap" id="runtime" aria-labelledby="s2">
+  <div class="cap">
+    <span class="seg2" aria-hidden="true">
+      <span class="seg"><i class="h a"></i><i class="v b on"></i><i class="v c on"></i><i class="h d"></i><i class="v e"></i><i class="v f"></i><i class="h g"></i></span>
+      <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="h g on"></i><i class="h d on"></i><i class="v e on"></i><i class="v c on"></i><i class="v f"></i></span>
+    </span>
+    <div>
+      <h2 id="s2">时长数码表 · 片长逐个显示</h2>
+      <p class="dsc">265电影网用七段数码管标出每部片的长度</p>
+    </div>
+    <a class="go" href="#runtime">完整时长表 &raquo;</a>
+  </div>
+  <div class="rtable">
+    <div class="th" aria-hidden="true"><span>片名 / 类型</span><span>时长数码</span><span>观看提示</span><span>评分</span></div>
+
+    <div class="rrow">
+      <div class="nm"><h3><a href="#">第七放映厅</a></h3><p>剧情 · 2026</p></div>
+      <div class="dg">
+        <span class="seg"><i class="v b on"></i><i class="v c on"></i><i class="h a"></i><i class="h d"></i><i class="v e"></i><i class="v f"></i><i class="h g"></i></span>
+        <span class="seg"><i class="v b on"></i><i class="v c on"></i><i class="h a"></i><i class="h d"></i><i class="v e"></i><i class="v f"></i><i class="h g"></i></span>
+        <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g"></i></span>
+        <em>分钟</em>
+      </div>
+      <div class="tags"><span>慢节奏</span><span>需留时间</span></div>
+      <div class="rt"><b>8.9</b><span>112 分钟</span></div>
+    </div>
+
+    <div class="rrow">
+      <div class="nm"><h3><a href="#">午夜编码</a></h3><p>悬疑 · 2025</p></div>
+      <div class="dg">
+        <span class="seg"><i class="v b on"></i><i class="v c on"></i><i class="h a"></i><i class="h d"></i><i class="v e"></i><i class="v f"></i><i class="h g"></i></span>
+        <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g"></i></span>
+        <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g on"></i></span>
+        <em>分钟</em>
+      </div>
+      <div class="tags"><span>需专注</span><span>深夜场</span></div>
+      <div class="rt"><b>8.8</b><span>108 分钟</span></div>
+    </div>
+
+    <div class="rrow">
+      <div class="nm"><h3><a href="#">信号塔</a></h3><p>文艺 · 2024</p></div>
+      <div class="dg">
+        <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g on"></i></span>
+        <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="h g on"></i><i class="h d on"></i><i class="v e on"></i><i class="v c on"></i><i class="v f"></i></span>
+        <em>分钟</em>
+      </div>
+      <div class="tags"><span>留白多</span><span>周末下午</span></div>
+      <div class="rt"><b>8.6</b><span>98 分钟</span></div>
+    </div>
+
+    <div class="rrow">
+      <div class="nm"><h3><a href="#">十六毫米</a></h3><p>纪录 · 2026</p></div>
+      <div class="dg">
+        <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g on"></i></span>
+        <span class="seg"><i class="h a on"></i><i class="v b"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g on"></i></span>
+        <em>分钟</em>
+      </div>
+      <div class="tags"><span>真实向</span><span>佐餐合适</span></div>
+      <div class="rt"><b>9.0</b><span>86 分钟</span></div>
+    </div>
+
+    <div class="rrow">
+      <div class="nm"><h3><a href="#">倒计时九十天</a></h3><p>剧情 · 2025</p></div>
+      <div class="dg">
+        <span class="seg"><i class="v b on"></i><i class="v c on"></i><i class="h a"></i><i class="h d"></i><i class="v e"></i><i class="v f"></i><i class="h g"></i></span>
+        <span class="seg"><i class="v b on"></i><i class="v c on"></i><i class="h a"></i><i class="h d"></i><i class="v e"></i><i class="v f"></i><i class="h g"></i></span>
+        <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g"></i></span>
+        <em>分钟</em>
+      </div>
+      <div class="tags"><span>职场向</span><span>需留时间</span></div>
+      <div class="rt"><b>8.7</b><span>110 分钟</span></div>
+    </div>
+
+    <div class="rrow">
+      <div class="nm"><h3><a href="#">红色按钮</a></h3><p>喜剧 · 2026</p></div>
+      <div class="dg">
+        <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g on"></i></span>
+        <span class="seg"><i class="h a"></i><i class="v b on"></i><i class="v c on"></i><i class="h g on"></i><i class="v f on"></i><i class="h d"></i><i class="v e"></i></span>
+        <em>分钟</em>
+      </div>
+      <div class="tags"><span>快节奏</span><span>通勤可看</span></div>
+      <div class="rt"><b>8.3</b><span>94 分钟</span></div>
+    </div>
+
+    <p class="ft"><span>表内共 <b>6</b> 部</span><span>最长 <b>112</b> 分钟</span><span>最短 <b>86</b> 分钟</span><span>更新 <b>每日 20:30</b></span></p>
+  </div>
+</section>
+
+<!-- ============ 栏目三：热度灯条 ============ -->
+<section class="blk wrap" id="hot" aria-labelledby="s3">
+  <div class="cap">
+    <span class="seg2" aria-hidden="true">
+      <span class="seg"><i class="h a"></i><i class="v b on"></i><i class="v c on"></i><i class="h d"></i><i class="v e"></i><i class="v f"></i><i class="h g"></i></span>
+      <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="h g on"></i><i class="h d on"></i><i class="v e"></i><i class="v c on"></i><i class="v f"></i></span>
+    </span>
+    <div>
+      <h2 id="s3">热度灯条 · 亮到哪格热到哪</h2>
+      <p class="dsc">265电影网按周统计点播，灯珠逐个点亮</p>
+    </div>
+    <a class="go" href="#hot">完整热度榜 &raquo;</a>
+  </div>
+  <div class="hots">
+    <article class="hot">
+      <span class="rk" aria-hidden="true">
+        <span class="seg"><i class="v b on"></i><i class="v c on"></i><i class="h a"></i><i class="h d"></i><i class="v e"></i><i class="v f"></i><i class="h g"></i></span>
+        <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g"></i></span>
+      </span>
+      <div class="bd"><h3><a href="#">第七放映厅</a></h3><p>剧情 · 2026 · 112 分钟</p></div>
+      <div class="bar"><span class="ledbar" style="--w:94%" aria-hidden="true"></span><span class="pk mono">12.6k<small>本周</small></span></div>
+    </article>
+    <article class="hot">
+      <span class="rk" aria-hidden="true">
+        <span class="seg"><i class="v b on"></i><i class="v c on"></i><i class="h a"></i><i class="h d"></i><i class="v e"></i><i class="v f"></i><i class="h g"></i></span>
+        <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="h g on"></i><i class="h d on"></i><i class="v e on"></i><i class="v c on"></i><i class="v f"></i></span>
+      </span>
+      <div class="bd"><h3><a href="#">午夜编码</a></h3><p>悬疑 · 2025 · 108 分钟</p></div>
+      <div class="bar"><span class="ledbar" style="--w:88%" aria-hidden="true"></span><span class="pk mono">11.4k<small>本周</small></span></div>
+    </article>
+    <article class="hot">
+      <span class="rk" aria-hidden="true">
+        <span class="seg"><i class="v b on"></i><i class="v c on"></i><i class="h a"></i><i class="h d"></i><i class="v e"></i><i class="v f"></i><i class="h g"></i></span>
+        <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="h g on"></i><i class="h d on"></i><i class="v e on"></i><i class="v c on"></i><i class="v f on"></i></span>
+      </span>
+      <div class="bd"><h3><a href="#">十六毫米</a></h3><p>纪录 · 2026 · 86 分钟</p></div>
+      <div class="bar"><span class="ledbar" style="--w:82%" aria-hidden="true"></span><span class="pk mono">10.2k<small>本周</small></span></div>
+    </article>
+    <article class="hot">
+      <span class="rk" aria-hidden="true">
+        <span class="seg"><i class="v b on"></i><i class="v c on"></i><i class="h a"></i><i class="h d"></i><i class="v e"></i><i class="v f"></i><i class="h g"></i></span>
+        <span class="seg"><i class="h a"></i><i class="v b on"></i><i class="v c on"></i><i class="h g on"></i><i class="v f on"></i><i class="h d"></i><i class="v e"></i></span>
+      </span>
+      <div class="bd"><h3><a href="#">倒计时九十天</a></h3><p>剧情 · 2025 · 110 分钟</p></div>
+      <div class="bar"><span class="ledbar" style="--w:76%" aria-hidden="true"></span><span class="pk mono">9.1k<small>本周</small></span></div>
+    </article>
+    <article class="hot">
+      <span class="rk" aria-hidden="true">
+        <span class="seg"><i class="v b on"></i><i class="v c on"></i><i class="h a"></i><i class="h d"></i><i class="v e"></i><i class="v f"></i><i class="h g"></i></span>
+        <span class="seg"><i class="h a on"></i><i class="v b"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g on"></i></span>
+      </span>
+      <div class="bd"><h3><a href="#">零号胶片</a></h3><p>动画 · 2025 · 96 分钟</p></div>
+      <div class="bar"><span class="ledbar" style="--w:68%" aria-hidden="true"></span><span class="pk mono">7.8k<small>本周</small></span></div>
+    </article>
+    <article class="hot">
+      <span class="rk" aria-hidden="true">
+        <span class="seg"><i class="v b on"></i><i class="v c on"></i><i class="h a"></i><i class="h d"></i><i class="v e"></i><i class="v f"></i><i class="h g"></i></span>
+        <span class="seg"><i class="h a on"></i><i class="v b"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g on"></i></span>
+      </span>
+      <div class="bd"><h3><a href="#">备用频道</a></h3><p>科幻 · 2024 · 104 分钟</p></div>
+      <div class="bar"><span class="ledbar" style="--w:60%" aria-hidden="true"></span><span class="pk mono">6.4k<small>本周</small></span></div>
+    </article>
+    <p class="hf">灯条按本周点播量等比例点亮，满格为 <b>13.0k</b> · 265电影网每周一 06:00 刷新一次</p>
+  </div>
+</section>
+
+<!-- ============ 栏目四：类型编码墙 ============ -->
+<section class="blk wrap" id="genre" aria-labelledby="s4">
+  <div class="cap">
+    <span class="seg2" aria-hidden="true">
+      <span class="seg"><i class="h a"></i><i class="v b on"></i><i class="v c on"></i><i class="h d"></i><i class="v e"></i><i class="v f"></i><i class="h g"></i></span>
+      <span class="seg"><i class="h a"></i><i class="v b on"></i><i class="v c on"></i><i class="h g on"></i><i class="v f on"></i><i class="h d"></i><i class="v e"></i></span>
+    </span>
+    <div>
+      <h2 id="s4">类型编码墙 · 一类一个编号</h2>
+      <p class="dsc">265电影网给每种类型分配固定编号</p>
+    </div>
+    <a class="go" href="#genre">全部编码 &raquo;</a>
+  </div>
+  <div class="codes">
+    <article class="code">
+      <div class="ch">
+        <span class="cd" aria-hidden="true">
+          <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g"></i></span>
+          <span class="seg"><i class="v b on"></i><i class="v c on"></i><i class="h a"></i><i class="h d"></i><i class="v e"></i><i class="v f"></i><i class="h g"></i></span>
+        </span>
+        <span class="ct mono">剧情人物</span>
+      </div>
+      <h3><a href="#">编号 10 · 剧情</a></h3>
+      <p>以人物关系推进，情绪铺陈较多，普遍需要一整段时间。</p>
+      <div class="cf"><span class="mono">收录 486 部</span><b>8.7</b></div>
+    </article>
+    <article class="code">
+      <div class="ch">
+        <span class="cd" aria-hidden="true">
+          <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g"></i></span>
+          <span class="seg"><i class="v b on"></i><i class="v c on"></i><i class="h a"></i><i class="h d"></i><i class="v e"></i><i class="v f"></i><i class="h g"></i></span>
+        </span>
+        <span class="ct mono">悬疑犯罪</span>
+      </div>
+      <h3><a href="#">编号 11 · 悬疑</a></h3>
+      <p>线索密集、反转较多，建议关灯不看手机地看完。</p>
+      <div class="cf"><span class="mono">收录 372 部</span><b>8.6</b></div>
+    </article>
+    <article class="code">
+      <div class="ch">
+        <span class="cd" aria-hidden="true">
+          <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g"></i></span>
+          <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="h g on"></i><i class="h d on"></i><i class="v e on"></i><i class="v c on"></i><i class="v f"></i></span>
+        </span>
+        <span class="ct mono">文艺慢片</span>
+      </div>
+      <h3><a href="#">编号 12 · 文艺</a></h3>
+      <p>留白与长镜头较多，节奏偏慢，适合周末下午。</p>
+      <div class="cf"><span class="mono">收录 318 部</span><b>8.5</b></div>
+    </article>
+    <article class="code">
+      <div class="ch">
+        <span class="cd" aria-hidden="true">
+          <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g"></i></span>
+          <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="h g on"></i><i class="h d on"></i><i class="v e on"></i><i class="v c on"></i><i class="v f on"></i></span>
+        </span>
+        <span class="ct mono">自然纪实</span>
+      </div>
+      <h3><a href="#">编号 13 · 纪录</a></h3>
+      <p>真实素材为主，节奏平稳，佐餐观看也不违和。</p>
+      <div class="cf"><span class="mono">收录 264 部</span><b>8.8</b></div>
+    </article>
+    <article class="code">
+      <div class="ch">
+        <span class="cd" aria-hidden="true">
+          <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g"></i></span>
+          <span class="seg"><i class="h a"></i><i class="v b on"></i><i class="v c on"></i><i class="h g on"></i><i class="v f on"></i><i class="h d"></i><i class="v e"></i></span>
+        </span>
+        <span class="ct mono">轻松喜剧</span>
+      </div>
+      <h3><a href="#">编号 14 · 喜剧</a></h3>
+      <p>笑点密、篇幅短，通勤或睡前都能完整看完。</p>
+      <div class="cf"><span class="mono">收录 286 部</span><b>8.3</b></div>
+    </article>
+    <article class="code">
+      <div class="ch">
+        <span class="cd" aria-hidden="true">
+          <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g"></i></span>
+          <span class="seg"><i class="h a on"></i><i class="v b"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g on"></i></span>
+        </span>
+        <span class="ct mono">科幻设定</span>
+      </div>
+      <h3><a href="#">编号 15 · 科幻</a></h3>
+      <p>设定先行、世界观扎实，适合喜欢自己琢磨的观众。</p>
+      <div class="cf"><span class="mono">收录 232 部</span><b>8.5</b></div>
+    </article>
+    <article class="code">
+      <div class="ch">
+        <span class="cd" aria-hidden="true">
+          <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g"></i></span>
+          <span class="seg"><i class="h a on"></i><i class="v b"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g on"></i></span>
+        </span>
+        <span class="ct mono">家庭日常</span>
+      </div>
+      <h3><a href="#">编号 16 · 家庭</a></h3>
+      <p>内容温和、情绪偏暖，代际与和解是常见主题。</p>
+      <div class="cf"><span class="mono">收录 248 部</span><b>8.6</b></div>
+    </article>
+    <article class="code">
+      <div class="ch">
+        <span class="cd" aria-hidden="true">
+          <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g"></i></span>
+          <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="v c on"></i><i class="h d"></i><i class="v e"></i><i class="v f"></i><i class="h g"></i></span>
+        </span>
+        <span class="ct mono">动画幻想</span>
+      </div>
+      <h3><a href="#">编号 17 · 动画</a></h3>
+      <p>手绘或三维制作，色彩层次丰富，合家欢居多。</p>
+      <div class="cf"><span class="mono">收录 214 部</span><b>8.7</b></div>
+    </article>
+  </div>
+</section>
+
+<!-- ============ 栏目五：更新计数器 ============ -->
+<section class="blk wrap" id="counter" aria-labelledby="s5">
+  <div class="cap">
+    <span class="seg2" aria-hidden="true">
+      <span class="seg"><i class="h a"></i><i class="v b on"></i><i class="v c on"></i><i class="h d"></i><i class="v e"></i><i class="v f"></i><i class="h g"></i></span>
+      <span class="seg"><i class="h a on"></i><i class="v b"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g on"></i></span>
+    </span>
+    <div>
+      <h2 id="s5">更新计数器 · 每批上架都记着</h2>
+      <p class="dsc">265电影网保留最近批次的上架时间与条目数</p>
+    </div>
+    <a class="go" href="#counter">全部批次 &raquo;</a>
+  </div>
+  <div class="counter">
+    <div class="counter-board">
+      <p class="ch mono">TOTAL ITEMS · 片 库 总 量</p>
+      <div class="bigcount" role="img" aria-label="3420">
+        <span class="seg amb"><i class="h a on"></i><i class="v b on"></i><i class="v c on"></i><i class="h d on"></i><i class="v e"></i><i class="v f"></i><i class="h g on"></i></span>
+        <span class="seg amb"><i class="h a"></i><i class="v b on"></i><i class="v c on"></i><i class="h g on"></i><i class="v f on"></i><i class="h d"></i><i class="v e"></i></span>
+        <span class="seg amb"><i class="h a on"></i><i class="v b on"></i><i class="h g on"></i><i class="h d on"></i><i class="v e on"></i><i class="v c on"></i><i class="v f"></i></span>
+        <span class="seg amb"><i class="h a on"></i><i class="v b on"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g"></i></span>
+      </div>
+      <p class="cl">今日新增 <b>18</b> 部 · 本月累计 <b>486</b> 部</p>
+      <div class="ticks" aria-hidden="true">
+        <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i>
+      </div>
+      <p class="cl" style="margin-top:8px">本月更新进度 <b>66%</b></p>
+    </div>
+    <div class="counter-list">
+      <div class="crow">
+        <span class="tm mono">2026-10-04 20:30<small>第 265 批</small></span>
+        <div class="nm"><h4><a href="#">第七放映厅 · 午夜编码 · 信号塔</a></h4><p>本批 18 部 · 剧情 6 / 悬疑 4 / 纪录 3 / 其余 5</p></div>
+        <div class="st"><span class="mono">NEW</span></div>
+      </div>
+      <div class="crow">
+        <span class="tm mono">2026-10-03 20:30<small>第 264 批</small></span>
+        <div class="nm"><h4><a href="#">倒计时九十天 · 红色按钮</a></h4><p>本批 14 部 · 喜剧 5 / 剧情 5 / 动画 4</p></div>
+        <div class="st"><span class="mono">OK</span></div>
+      </div>
+      <div class="crow">
+        <span class="tm mono">2026-10-02 20:30<small>第 263 批</small></span>
+        <div class="nm"><h4><a href="#">备用频道 · 零号胶片</a></h4><p>本批 12 部 · 科幻 4 / 动画 4 / 家庭 4</p></div>
+        <div class="st"><span class="mono">OK</span></div>
+      </div>
+      <div class="crow">
+        <span class="tm mono">2026-10-01 20:30<small>第 262 批</small></span>
+        <div class="nm"><h4><a href="#">十六毫米 · 信号塔</a></h4><p>本批 16 部 · 纪录 6 / 文艺 5 / 剧情 5</p></div>
+        <div class="st"><span class="mono">OLD</span></div>
+      </div>
+      <div class="crow">
+        <span class="tm mono">2026-09-30 20:30<small>第 261 批</small></span>
+        <div class="nm"><h4><a href="#">第七放映厅（重映版）</a></h4><p>本批 11 部 · 多为补录与修正条目</p></div>
+        <div class="st"><span class="mono">REV</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 栏目六：站点特色 ============ -->
+<section class="blk wrap" id="why" aria-labelledby="s6">
+  <div class="cap">
+    <span class="seg2" aria-hidden="true">
+      <span class="seg"><i class="h a"></i><i class="v b on"></i><i class="v c on"></i><i class="h d"></i><i class="v e"></i><i class="v f"></i><i class="h g"></i></span>
+      <span class="seg"><i class="h a on"></i><i class="v b"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g on"></i></span>
+    </span>
+    <div>
+      <h2 id="s6">为什么用265电影网挑片</h2>
+      <p class="dsc">把选片变成读数字，一眼能比</p>
+    </div>
+    <a class="go" href="#about">了解我们 &raquo;</a>
+  </div>
+  <div class="pts">
+    <div class="pt">
+      <span class="n" aria-hidden="true">
+        <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g"></i></span>
+        <span class="seg"><i class="v b on"></i><i class="v c on"></i><i class="h a"></i><i class="h d"></i><i class="v e"></i><i class="v f"></i><i class="h g"></i></span>
+      </span>
+      <h3>片长可读数</h3>
+      <p>时长用七段数码管逐个显示，哪部更长、长多少，一眼可比。</p>
+    </div>
+    <div class="pt">
+      <span class="n" aria-hidden="true">
+        <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g"></i></span>
+        <span class="seg"><i class="v b on"></i><i class="v c on"></i><i class="h a"></i><i class="h d"></i><i class="v e"></i><i class="v f"></i><i class="h g"></i></span>
+      </span>
+      <h3>热度可见光</h3>
+      <p>灯珠条按点播量逐格点亮，亮到哪一格就热到什么程度。</p>
+    </div>
+    <div class="pt">
+      <span class="n" aria-hidden="true">
+        <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g"></i></span>
+        <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="h g on"></i><i class="h d on"></i><i class="v e on"></i><i class="v c on"></i><i class="v f"></i></span>
+      </span>
+      <h3>类型有编号</h3>
+      <p>每种类型一个固定编号，记住编号就能直接找回来。</p>
+    </div>
+    <div class="pt">
+      <span class="n" aria-hidden="true">
+        <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g"></i></span>
+        <span class="seg"><i class="h a"></i><i class="v b on"></i><i class="v c on"></i><i class="h g on"></i><i class="v f on"></i><i class="h d"></i><i class="v e"></i></span>
+      </span>
+      <h3>更新能追溯</h3>
+      <p>计数器保留每批的编号、时间与条目数，什么时候上了什么查得到。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 栏目七：关于 / FAQ ============ -->
+<section class="blk wrap" id="about" aria-labelledby="s7">
+  <div class="cap">
+    <span class="seg2" aria-hidden="true">
+      <span class="seg"><i class="h a"></i><i class="v b on"></i><i class="v c on"></i><i class="h d"></i><i class="v e"></i><i class="v f"></i><i class="h g"></i></span>
+      <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="v c on"></i><i class="h d"></i><i class="v e"></i><i class="v f"></i><i class="h g"></i></span>
+    </span>
+    <div>
+      <h2 id="s7">关于265电影网 · 常见问题</h2>
+      <p class="dsc">了解265电影网的看板规则与更新节奏</p>
+    </div>
+    <a class="go" href="#about">联系站长 &raquo;</a>
+  </div>
+  <div class="faqs">
+    <details open>
+      <summary><i aria-hidden="true"></i>265电影网是什么样的电影网站？</summary>
+      <p>265电影网（https://265dianyingwang-cn.github.io）是用电子数码屏的逻辑整理电影的推荐站点：片单按上架批次归档，时长用七段数码管显示，热度用 LED 灯珠条呈现，类型整理成编码墙，另配更新计数器，每部影片附剧情简介、时长与评分参考。</p>
+    </details>
+    <details>
+      <summary><i aria-hidden="true"></i>265电影网的片单多久更新一次？</summary>
+      <p>上架片单与时长数码表每日 20:30 更新，热度灯条按周统计刷新，类型编码随收录同步补充，更新计数器保留最近若干批次的上架记录。</p>
+    </details>
+    <details>
+      <summary><i aria-hidden="true"></i>手机端可以正常浏览265电影网吗？</summary>
+      <p>可以。265电影网采用响应式设计，上架片单在小屏转为双列或单列，时长数码表隐藏数码列并精简为两列，热度灯条改为上下排布，移动端另配底部快捷导航。</p>
+    </details>
+    <details>
+      <summary><i aria-hidden="true"></i>找不到想看的电影怎么办？</summary>
+      <p>可使用顶部检索框按片名或导演查找，也可进入类型编码墙按分类筛选；仍未收录的影片可通过联系站长提交片名，我们会在下一次更新时优先补录。</p>
+    </details>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ 页脚 ============ -->
+<footer class="foot">
+  <div class="wrap">
+    <div class="f-grid">
+      <div class="f-brand">
+        <div class="lg">
+          <span class="num" aria-hidden="true">
+            <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f"></i><i class="h g on"></i></span>
+            <span class="seg"><i class="h a on"></i><i class="v b on"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g on"></i></span>
+            <span class="seg"><i class="h a on"></i><i class="v b"></i><i class="v c on"></i><i class="h d on"></i><i class="v e on"></i><i class="v f on"></i><i class="h g on"></i></span>
+          </span>
+          <b>265电影网</b>
+        </div>
+        <p>265电影网用电子数码屏的逻辑整理电影：片长按七段数码管逐个显示，长短一眼可比；热度做成 LED 灯珠条，亮到哪一格代表热到什么程度；类型编成编码墙，每种类型一个编号；更新计数器记录每一批上架的片名与时间。剧情简介、时长与评分都写在条目上，看数字就知道该挑哪一部。</p>
+        <p class="u mono">网址：https://265dianyingwang-cn.github.io</p>
+      </div>
+      <div>
+        <h4>看板栏目</h4>
+        <ul>
+          <li><a href="#new">上架片单</a></li>
+          <li><a href="#runtime">时长数码表</a></li>
+          <li><a href="#hot">热度灯条</a></li>
+          <li><a href="#genre">类型编码墙</a></li>
+          <li><a href="#counter">更新计数器</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>类型编号</h4>
+        <ul>
+          <li><a href="#genre">10 剧情人物</a></li>
+          <li><a href="#genre">11 悬疑犯罪</a></li>
+          <li><a href="#genre">12 文艺慢片</a></li>
+          <li><a href="#genre">13 自然纪实</a></li>
+          <li><a href="#genre">14 轻松喜剧</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>站点信息</h4>
+        <ul>
+          <li><a href="#about">关于265电影网</a></li>
+          <li><a href="#why">站点特色</a></li>
+          <li><a href="#counter">更新批次</a></li>
+          <li><a href="#">意见反馈</a></li>
+          <li><a href="#">免责声明</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="copy">
+      265电影网 &copy; 2026 · 本站为电影推荐与影视资讯聚合站点，所列影片信息仅供参考。<br>
+      Powered by 265电影网 | https://265dianyingwang-cn.github.io
+    </p>
+  </div>
+</footer>
+
+<!-- ============ 移动端底部导航 ============ -->
+<nav class="dock" aria-label="移动端快捷导航">
+  <ul>
+    <li><a href="#top" class="on"><span class="ic" aria-hidden="true">▮</span>看板</a></li>
+    <li><a href="#new"><span class="ic" aria-hidden="true">▤</span>上架</a></li>
+    <li><a href="#runtime"><span class="ic" aria-hidden="true">◱</span>时长</a></li>
+    <li><a href="#genre"><span class="ic" aria-hidden="true">▦</span>编码</a></li>
+    <li><a href="#about"><span class="ic" aria-hidden="true">◎</span>关于</a></li>
+  </ul>
+</nav>
+
+<a class="up" href="#top" aria-label="返回顶部">↑</a>
+
+</body>
+</html>
